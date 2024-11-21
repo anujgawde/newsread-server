@@ -1,5 +1,5 @@
 {
-  "name": "bytenews-server",
+  "name": "newsread-server",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -29,6 +29,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^10.0.0",
     "axios": "^1.7.7",
+    "body-parser": "^1.20.3",
     "pg": "^8.13.1",
     "puppeteer": "^23.8.0",
     "reflect-metadata": "^0.2.0",

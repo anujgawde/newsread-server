@@ -31,4 +31,10 @@ export class Articles {
 
   @Column({ name: 'media_reference' })
   mediaReference: string;
+
+  @Column({ name: 'updated_at', type: 'timestamp' })
+  updatedAt: Date;
+
+  @Column({ name: 'bucket_key' })
+  bucketKey: string;
 }
