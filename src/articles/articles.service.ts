@@ -84,4 +84,8 @@ export class ArticlesService {
       return selectedArticle.mediaReference;
     }
   }
+
+  async getArticleById(id: string) {
+    return await this.articlesRepository.findOneBy({ id: id });
+  }
 }
