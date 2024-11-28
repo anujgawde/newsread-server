@@ -37,4 +37,7 @@ export class Articles {
 
   @Column({ name: 'bucket_key' })
   bucketKey: string;
+
+  @Column({ name: 'visit_count' })
+  visitCount: number;
 }
