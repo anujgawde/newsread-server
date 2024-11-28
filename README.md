@@ -1,85 +1,87 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NewsRead Server
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+The **NewsRead Server** is the backend service powering the NewsRead application. It is designed to handle news fetching, storage, and text-to-speech (TTS) functionality. This server interacts with the [newsdata.io API](https://newsdata.io/) for fetching news articles and leverages **AWS Polly** for generating audio files, ensuring a seamless and efficient experience for the user.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This server is essential for running the **NewsRead** application. To view the client-side code and integrate it with this backend, refer to the [newsread](https://github.com/anujgawde/newsread) repository.
 
-## Description
+## Features 🚀
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+-   **News Management**:
+    -   Fetch and store the latest news articles.
+    -   Retrieve trending, latest, or specific articles.
+-   **Database Optimization**:
+    -   Reduce API calls by efficiently storing fetched data in PostgreSQL.
+-   **Text-to-Speech (TTS)**:
+    -   Convert articles into audio using AWS Polly and stream it to users.
+-   **Trending Analytics**:
+    -   Track and update article visits for ranking popular articles.
 
-## Project setup
+## Installation & Setup ⚙️
 
-```bash
-$ npm install
-```
+### Prerequisites
 
-## Compile and run the project
+-   **Node.js** and **npm** installed.
+-   Setup **AWS Polly** and **AWS S3** enabled with appropriate access keys.
 
-```bash
-# development
-$ npm run start
+### Steps
 
-# watch mode
-$ npm run start:dev
+1.  **Clone the Repository**:
+    
+    ```
+    git clone https://github.com/anujgawde/newsread-server  
+    cd newsread-server 
+2.  **Install Dependencies**:
+    
+    ```
+    npm install 
+3.  **Set Environment Variables**:  
+    Create a `.env` file in the root directory and configure the following variables:
 
-# production mode
-$ npm run start:prod
-```
+    
+    ```AWS_ACCESS_KEY_ID=your_aws_access_key_id  
+    AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key  
+    AWS_TTS_BUCKET_NAME=your_aws_s3_bucket_name  
+    DB_URL=your_postgresql_connection_url  
+    DB_NAME=your_database_name  
+    DB_PASSWORD=your_database_password  
+    NEWSDATA_API_KEY=your_newsdata_api_key 
+4.  **Run the Server**:
+    
+    ```
+    npm run start:dev 
+5.  **Test the API**:  
+    The server runs at `http://localhost:8001`. Use tools like Postman or your browser to test endpoints.
 
-## Run tests
+## API Endpoints 🛠️
+1. `GET /articles/get-all-articles`: Retrieve all stored articles
+2. `GET /articles/get-latest-articles`: Fetch and store the latest articles
+3. `GET /articles/get-trending-articles`: Retrieve trending articles based on visits
+4. `GET /articles/:id`: Retrieve a specific article by its ID
+5. `POST /articles/read-article`: Convert article content to audio and play it
+6. `POST /articles/update-article-visits`: Increment the visit count for an article
 
-```bash
-# unit tests
-$ npm run test
+## Tech Stack 🛠️
 
-# e2e tests
-$ npm run test:e2e
+-   **Backend Framework**: [NestJS](https://nestjs.com/)
+-   **Database**:
+    -   [PostgreSQL](https://www.postgresql.org/)
+    -   [NeonDB](https://neon.tech/)
+-   **Cloud Services**:
+    -   [AWS Polly](https://aws.amazon.com/polly/)
+    -   [AWS S3](https://aws.amazon.com/s3/)
+-   **News API**: [newsdata.io](https://newsdata.io/)
 
-# test coverage
-$ npm run test:cov
-```
+## Roadmap 🗺️
 
-## Resources
+-   Add API caching to reduce database queries.
+-   Implement multi-language TTS support.
+-   Enhance analytics for article performance.
 
-Check out a few resources that may come in handy when working with NestJS:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Contributing 🤝
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Contributions are welcome! Please open an issue or submit a pull request for suggestions or improvements.
 
 ## Stay in touch
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- Author - [Anuj Gawde](https://x.com/axgdevv)
