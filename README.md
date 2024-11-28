@@ -53,12 +53,12 @@ This server is essential for running the **NewsRead** application. To view the c
     The server runs at `http://localhost:8001`. Use tools like Postman or your browser to test endpoints.
 
 ## API Endpoints 🛠️
-`GET /articles/get-all-articles`: Retrieve all stored articles
-`GET /articles/get-latest-articles`: Fetch and store the latest articles
-`GET /articles/get-trending-articles`: Retrieve trending articles based on visits
-`GET /articles/:id`: Retrieve a specific article by its ID
-`POST /articles/read-article`: Convert article content to audio and play it
-`POST /articles/update-article-visits`: Increment the visit count for an article
+1. `GET /articles/get-all-articles`: Retrieve all stored articles
+2. `GET /articles/get-latest-articles`: Fetch and store the latest articles
+3. `GET /articles/get-trending-articles`: Retrieve trending articles based on visits
+4. `GET /articles/:id`: Retrieve a specific article by its ID
+5. `POST /articles/read-article`: Convert article content to audio and play it
+6. `POST /articles/update-article-visits`: Increment the visit count for an article
 
 ## Tech Stack 🛠️
 
