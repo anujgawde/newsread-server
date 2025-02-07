@@ -14,8 +14,8 @@ export class ArticlesService {
   // In progress:
   // This function calls the newsdata.io api for fetching new articles throughout the day and saving them to the database.
   // TODO: Add a cron job which will query newsdata.io for new articles and save them to the database.
-  // https://newsdata.io/api/1/news?apikey=pub_59586df648e5dfb6fb136f064a948c3969b41&q=trending&country=us&language=en
-  // Latest: https://newsdata.io/api/1/latest?apikey=pub_59586df648e5dfb6fb136f064a948c3969b41
+  // https://newsdata.io/api/1/news?apikey=-abcd-&q=trending&country=us&language=en
+  // Latest: https://newsdata.io/api/1/latest?apikey=-abcd-
   async saveArticles() {}
 
   // Steps:
@@ -93,60 +93,26 @@ export class ArticlesService {
 
   async updateArticleVisits(data: any) {
     // Prepare the array of update promises
-    // const updatePromises = Object.entries(data).map(
-    //   ([id, visits]: [string, number]) => {
-    //     return this.articlesRepository
-    //       .createQueryBuilder()
-    //       .update(Articles)
-    //       .set({ visitCount: visits })
-    //       .where('id = :id', { id })
-    //       .execute();
-    //   },
-    // );
-    // // Execute all updates in parallel
-    // await Promise.all(updatePromises);
+    const updatePromises = Object.entries(data).map(
+      ([id, visits]: [string, number]) => {
+        return this.articlesRepository
+          .createQueryBuilder()
+          .update(Articles)
+          .set({ visitCount: visits })
+          .where('id = :id', { id })
+          .execute();
+      },
+    );
+    // Execute all updates in parallel
+    await Promise.all(updatePromises);
   }
 
   async getTrendingArticles(limit: number = 10, page: number = 1) {
-    const [posts, total] = await this.articlesRepository.findAndCount({
+    const [articles, total] = await this.articlesRepository.findAndCount({
       take: limit, // Number of posts per page
       skip: (page - 1) * limit, // Offset based on the page number
       order: { visitCount: 'DESC' }, // Optional: Sort by visits, or any other criteria
     });
-
-    return {
-      posts,
-      total,
-      currentPage: page,
-      totalPages: Math.ceil(total / limit),
-    };
-  }
-
-  async getLatestArticles(limit: number = 10, page: number = 1) {
-    const [recentArticles, total] = await this.articlesRepository
-      .createQueryBuilder('article')
-      .where("article.datePublished >= NOW() - INTERVAL '12 hours'")
-      .skip((page - 1) * limit) // Calculate the offset
-      .take(limit) // Limit the number of results per page
-      .getMany();
-
-    return {
-      data: recentArticles,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(parseInt(JSON.stringify(total)) / limit),
-    };
-  }
-
-  async getAllArticles(limit: number = 10, page: number = 1) {
-    const [articles, total] = await this.articlesRepository.findAndCount({
-      take: limit, // Number of posts per page
-      skip: (page - 1) * limit, // Offset based on the page number
-      order: { datePublished: 'DESC' }, // Optional: Sort by visits, or any other criteria
-    });
-
-    console.log('inside this', articles, page);
 
     return {
       articles,
@@ -154,5 +120,71 @@ export class ArticlesService {
       currentPage: page,
       totalPages: Math.ceil(total / limit),
     };
+  }
+
+  async getLatestArticles(limit: number = 10, page: number = 1) {
+    // Currently, the condition for returning articles which have been posted in the last 12 hours is commented out since we're not fetching new articles in every few hours as of now.
+    // When new article fetching is enabled, the where condition will be added
+    const [recentArticles, total] = await this.articlesRepository
+      .createQueryBuilder('articles')
+      // .where("articles.date_published >= NOW() - INTERVAL '12 hours'")
+      .orderBy('articles.date_published', 'DESC')
+      .skip((page - 1) * limit) // Pagination offset
+      .take(limit) // Limit to 10 items
+      .getManyAndCount(); // Fetches data and total count
+
+    return {
+      articles: recentArticles, // Should return an array of articles
+      total, // Total count of records
+      limit,
+      offset: 0,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  async searchArticles(limit: number = 10, page: number = 1, query: string) {
+    const [searchArticles, total] = await this.articlesRepository
+      .createQueryBuilder('articles')
+      .where('articles.search_vector @@ plainto_tsquery(:query)', { query })
+      .orderBy(
+        'ts_rank(articles.search_vector, plainto_tsquery(:query))',
+        'DESC',
+      )
+      .skip((page - 1) * limit) // Pagination offset
+      .take(limit) // Limit to 10 items
+      .getManyAndCount(); // Fetches data and total count
+
+    return {
+      articles: searchArticles,
+      total,
+      limit,
+      offset: 0,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  async getAllArticles(limit: number = 10, page: number = 1, query: string) {
+    if (query.length && query !== 'null') {
+      if (query === 'trending') {
+        return this.getTrendingArticles();
+      } else if (query === 'latest') {
+        return this.getLatestArticles();
+      } else {
+        return this.searchArticles(10, 1, query);
+      }
+    } else {
+      const [articles, total] = await this.articlesRepository.findAndCount({
+        take: limit, // Number of posts per page
+        skip: (page - 1) * limit, // Offset based on the page number
+        order: { datePublished: 'DESC' }, // Optional: Sort by visits, or any other criteria
+      });
+
+      return {
+        articles,
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+      };
+    }
   }
 }

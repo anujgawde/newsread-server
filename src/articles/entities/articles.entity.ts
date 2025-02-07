@@ -40,4 +40,7 @@ export class Articles {
 
   @Column({ name: 'visit_count' })
   visitCount: number;
+
+  @Column({ type: 'tsvector', nullable: true })
+  search_vector: string;
 }
